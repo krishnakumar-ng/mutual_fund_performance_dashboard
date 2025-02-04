@@ -1,0 +1,2 @@
+class MutualFundDashboard:
+    pass
