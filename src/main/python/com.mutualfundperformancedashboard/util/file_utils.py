@@ -1,5 +1,7 @@
 from pathlib import Path
 import csv
+from plistlib import InvalidFileException
+
 import pandas as pd
 from datetime import datetime
 
@@ -76,14 +78,7 @@ class FileUtils:
             print("No scheme summaries found. Skipping Excel export.")
             return
 
-        root_dir = FileUtils.get_project_root_pathlib()
-
-        today = datetime.now().strftime('%Y-%m-%d')
-        filename = f'scheme_summary_excel_{today}.xlsx'
-
-        target_file_path = root_dir / "src" / "main" / "target" / filename
-
-        with pd.ExcelWriter(target_file_path, engine='xlsxwriter') as writer:
+        with pd.ExcelWriter(FileUtils.get_target_file_path(".xlsx"), engine='xlsxwriter') as writer:
             workbook = writer.book
 
             # Concatenate all DataFrames into a single DataFrame
@@ -124,15 +119,27 @@ class FileUtils:
             print("No scheme summaries found. Skipping CSV export.")
             return
 
-        root_dir = FileUtils.get_project_root_pathlib()
-
-        today = datetime.now().strftime('%Y-%m-%d')
-        filename = f'scheme_summary_csv)_{today}.csv'
-
-        target_file_path = root_dir / "src" / "main" / "target" / filename
-
         # Concatenate all DataFrames into a single DataFrame
         all_summaries_df = pd.concat(summaries_list, ignore_index=True)
 
         # Save the DataFrame to CSV
-        all_summaries_df.to_csv(target_file_path, index=False)
+        all_summaries_df.to_csv(FileUtils.get_target_file_path(".csv"), index=False)
+
+    @staticmethod
+    def get_target_file_path(file_extension):
+        root_dir = FileUtils.get_project_root_pathlib()  # Or Path(FileUtils.get_project_root_pathlib()) if it's a string
+
+        today = datetime.now().strftime('%Y-%m-%d')
+        if file_extension == ".xlsx":
+            filename = f'scheme_summary_excel_{today}.xlsx'
+        elif file_extension == ".csv":
+            filename = f'scheme_summary_csv_{today}.csv'
+        else:
+            raise InvalidFileException("Unsupported file_extension type - " + file_extension)
+
+        target_dir = root_dir / "target"  # Create a Path object for the directory
+        target_file_path = target_dir / filename
+
+        # Create the directory if it doesn't exist.  parents=True creates parent dirs if needed.
+        target_dir.mkdir(parents=True, exist_ok=True)  # exist_ok prevents error if dir exists
+        return target_file_path
