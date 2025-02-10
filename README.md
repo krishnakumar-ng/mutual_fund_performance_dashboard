@@ -1,13 +1,11 @@
-# mutual_fund_performance_dashboard
+# Mutual Fund Performance Dashboard
 
-# SetUp:
---------
+# Set up:
 
 1. Install Python 3.x in your machine
 2. Run install.sh file to download all the required packages
 
-# To Generate the Performance report: 
--------------------------------------
+# To Generate the Performance report:
 
 1. Add the mutual fund names in the mutual_fund_list.csv file under src/main/resources folder
 
